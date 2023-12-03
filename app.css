@@ -1,0 +1,101 @@
+.backBox 
+{
+    width: 1000px;
+    height: 650px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 100px;
+    padding: 30px;
+    background: url(https://assets.awwwards.com/awards/submissions/2020/02/5e469a5f90b1c614158410.jpg);
+    background-size: 100%;
+    background-repeat: no-repeat;
+    box-shadow: 0 0 35px 0px rgba(0, 0, 0, 0.3);
+    display: -ms-flexbox; /* IE10 */
+    display: flex;
+    -ms-flex-wrap: wrap; /* IE10 */
+    flex-wrap: wrap;
+}
+
+.loginBox
+{
+    width: 400px;
+    height: 550px;
+    margin-left: 30px;
+    margin-top: 20px;
+    padding: 30px;
+    box-shadow: 0 0 35px 0px rgba(0, 0, 0, 0.2);
+    background: rgba(255,255,255);
+}
+
+.textBox
+{
+    width: 400px;
+    height: 200px;
+    padding: 30px;
+    margin-top: 130px;
+    margin-left: 25px;
+    text-align: center;
+    color: white;
+    font-size: 50px;
+}
+
+/*
+font-family: 'Alegreya Sans SC', sans-serif;
+font-family: 'Cinzel', serif;
+font-family: 'IM Fell French Canon SC', serif;
+font-family: 'Julius Sans One', sans-serif;
+font-family: 'Marcellus SC', serif;
+font-family: 'Philosopher', sans-serif;
+font-family: 'Poiret One', sans-serif;
+*/
+body
+{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    text-align: left;
+    justify-content: center;
+    background: rgba(45,43,46,255);
+    background-repeat: no-repeat;
+    overflow: hidden;
+    min-height: 100vh;
+    max-width: 1920px; /* Adjust this to your desired maximum width */
+    font-family: 'Poiret One', sans-serif;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+input[type=text] 
+{
+    border-radius: 6px;
+    width: 98%;
+    margin-bottom: 25px;
+    margin-top: 19px;
+    height: 35px;
+    font-size: 20px;
+    font-family: 'Marcellus', serif;
+}
+
+input[type=password] 
+{
+    border-radius: 6px;
+    width: 98%;
+    margin-bottom: 25px;
+    margin-top: 10px;
+    height: 35px;
+    font-size: 20px;
+    font-family: 'Marcellus', serif;
+}
+
+
+input[type=submit] 
+{
+    border-radius: 6px;
+    background-color: rgba(45,43,46,255);  
+    color: white;
+    width: 100%;
+    height: 55px;
+    margin-top: 25px;
+    font-family: 'Marcellus', serif;
+    font-size: 20px;
+}
