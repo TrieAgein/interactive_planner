@@ -1,44 +1,61 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, session, abort
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin, LoginManager, current_user, login_user, logout_user, login_required
 
 
 #flask --app app run   use this to run app
 # http://127.0.0.1:5000/ # link to webaddress
 
 app = Flask(__name__)
-
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///example.sqlite"
-app.config["SECRET_KEY"] = "mysecret"
-db = SQLAlchemy(app)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+db = SQLAlchemy(app)  # Initialize SQLAlchemy with the Flask app
 
-app.app_context().push() # without this, I recieve flask error
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(30), unique=True, nullable=False)
+    password = db.Column(db.String(128), nullable=False)
 
-
-# databases
-
-
-
-
-
-# @app.route('/')
-# def launch():
-    # return redirect(url_for('login'))
-
-# @app.route('/login')
-# def login():
-#     return render_template('index.html')
-
-# @app.route('/register')
-# def register():
-#     return render_template('register.html')
-
-# @app.route('/run')
-# def run():
-#     return "<p>Is indeed running page</p>"
-
+class Event(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.String(20), nullable=False)
+    time = db.Column(db.String(20), nullable=False)
+    event = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', backref=db.backref('events', lazy=True))
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.drop_all()
+        # Create tables
+        db.create_all()
+
+        # Create a user
+        new_user = User(email='john@example.com', password='password123')
+        db.session.add(new_user)
+        db.session.commit()
+
+        # Add events for the user
+        event1 = Event(date='2023-12-25', time='10:00 AM', event='Christmas celebration', user=new_user)
+        event2 = Event(date='2023-11-30', time='3:00 PM', event='Meeting with John', user=new_user)
+        db.session.add(event1)
+        db.session.add(event2)
+        db.session.commit()
+
+        # Retrieve all events for a specific user (e.g., the user with ID=1)
+        user_id = 1  # Assuming the user ID is 1 for the newly created user
+        user_events = Event.query.filter_by(user_id=user_id).all()
+        for event in user_events:
+            print(event)
+
+        # Retrieve a specific user and their associated events
+        user = User.query.filter_by(id=user_id).first()
+        print(f"User Email: {user.email}, User Password: {user.password}")
+        print("User's Events:")
+        for eventt in user.events:
+            print(f"Date: {eventt.date}, Time: {eventt.time}, Event= {eventt.event}")
+
     app.run(debug=True)
 
 # Notes 
