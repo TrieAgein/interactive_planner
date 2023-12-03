@@ -15,27 +15,22 @@
 
 <body>
     <div class="backBox">
-        <div class="registerBox">
-            <h2>Create your Chrono account</h2>
-                <p style="display: inline;">Already Registered? <a href="{{ url_for('register') }}">Sign In<br><br></a></p>
-                <label for="new_name">Enter name:</label>
-                <input style="margin-top: 5px; margin-bottom: 15px;" type="text" id="new_name" name="new_name" required>
+        <div class="loginBox">
+            <h2>Login</h2>
+            <p style="display: inline;">Don't have an account? <a href="{{ url_for('register') }}">Sign Up<br><br><br></a></p>
+                <label for="username">Email Address:</label>
+                <input style="margin-top: 10px; margin-bottom: 25px;" type="text" id="email" name="email" required>
         
                 <br>
         
-                <label for="new_email">Email:</label>
-                <input style="margin-top: 5px; margin-bottom: 15px;" type="text" id="new_email" name="new_email" required>
+                <label for="password">Password:</label>
+                <input style="margin-top: 10px; margin-bottom: 25px;" type="password" id="password" name="password" required>
         
                 <br>
         
-                <label for="new_password">Create Password:</label>
-                <input style="margin-top: 5px; margin-bottom: 15px;" type="password" id="new_password" name="new_password" required>
-        
-                <br>
-
-                <input style="margin-top: 15px;" type="submit" value="Create Account">
-                <p id="updateDisplay" style="display:none;"></p>
-            </div>
+                <input style="margin-top: 25px;" type="submit" value="Login">
+            </form>   
+        </div>
         <div class="textBox">
             <h1>Chrono</h1>
         </div>
