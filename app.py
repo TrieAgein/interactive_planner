@@ -21,21 +21,21 @@ app.app_context().push() # without this, I recieve flask error
 
 
 
-# @app.route('/')
-# def launch():
-    # return redirect(url_for('login'))
+@app.route('/')
+def launch():
+ return redirect(url_for('login'))
 
-# @app.route('/login')
-# def login():
-#     return render_template('index.html')
+@app.route('/login')
+def login():
+    return render_template('login.html')
 
-# @app.route('/register')
-# def register():
-#     return render_template('register.html')
+@app.route('/register')
+def register():
+   return render_template('register.html')
 
-# @app.route('/run')
-# def run():
-#     return "<p>Is indeed running page</p>"
+@app.route('/run')
+def run():
+    return "<p>Is indeed running page</p>"
 
 
 if __name__ == '__main__':
