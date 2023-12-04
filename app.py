@@ -1,17 +1,26 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, session, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, current_user, login_user, logout_user, login_required
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+from sqlalchemy import CheckConstraint
 
 
 #flask --app app run   use this to run app
 # http://127.0.0.1:5000/ # link to webaddress
 
 app = Flask(__name__)
+
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///example.sqlite"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SECRET_KEY"] = "mysecret"
+db = SQLAlchemy(app)
+admin = Admin(app)
 
-db = SQLAlchemy(app)  # Initialize SQLAlchemy with the Flask app
+app.app_context().push() # without this, I recieve flask error
 
+
+# databases
+ 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(30), unique=True, nullable=False)
@@ -24,6 +33,30 @@ class Event(db.Model):
     event = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('events', lazy=True))
+
+class Admin(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(30), unique=True, nullable=False)
+    password = db.Column(db.String(128), nullable=False)
+
+admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Event, db.session))
+
+@app.route('/')
+def launch():
+ return redirect(url_for('login'))
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/register')
+def register():
+   return render_template('register.html')
+
+@app.route('/run')
+def run():
+    return "<p>Is indeed running page</p>"
 
 if __name__ == '__main__':
     with app.app_context():
@@ -82,6 +115,9 @@ if __name__ == '__main__':
 #>>> from app import app      use this to avoid error
 #>>> from app import db
 #>>> from app import User
+#>>> user1 = User(studentName="student1",email="somethin@gmail" ,password="something",role="student")
+#>>> db.session.add(user1)
+#>>> db.session.commit()
 #>>> user1 = User(studentName="student1",email="somethin@gmail" ,password="something",role="student")
 #>>> db.session.add(user1)
 #>>> db.session.commit()
