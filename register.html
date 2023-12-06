@@ -14,33 +14,55 @@
     <title>Login page</title>
 
 <body>
-    <div class="backBox">
-        <div class="registerBox">
-            <h2>Create your Chrono account</h2>
-                <!-- Still Needs form actions -->
-                <p style="display: inline;">Already Registered? <a href="{{ url_for('login') }}">Sign In<br><br></a></p>
-                <label for="new_name">Enter name:</label>
-                <input style="margin-top: 5px; margin-bottom: 15px;" type="text" id="new_name" name="new_name" required>
-        
-                <br>
-        
-                <label for="new_email">Email:</label>
-                <input style="margin-top: 5px; margin-bottom: 15px;" type="text" id="new_email" name="new_email" required>
-        
-                <br>
-        
-                <label for="new_password">Create Password:</label>
-                <input style="margin-top: 5px; margin-bottom: 15px;" type="password" id="new_password" name="new_password" required>
-        
-                <br>
+<div class="backBox">
+    <div class="registerBox">
+        <h2>Create your Chrono account</h2>
 
-                <input style="margin-top: 15px;" type="submit" value="Create Account">
-                <p id="updateDisplay" style="display:none;"></p>
-            </div>
-        <div class="textBox">
-            <h1>Chrono</h1>
+    <!-- Flash messages logic -->
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'login' %}
+                    <div style="color:red; text-align: center;" class="notification is-danger">
+                        {{ messages[0] }} <br> Go to <a href="{{ url_for('login')}}">Login Page</a>
+                    </div>
+                {% else %}
+                    <div style="color:red; text-align: center;" class="notification is-danger">{{ messages[0] }}</div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+            <!-- Still Needs form actions -->
+
+        <form action="{{ url_for('register_backend') }}" method="post">
+            <p style="display: inline;">Already Registered? <a href="{{ url_for('login') }}">Sign In<br><br></a></p>
+
+            <label for="new_name">Enter name:</label>
+            <input style="margin-top: 5px; margin-bottom: 15px;" type="text" id="new_name" name="new_name" required>
+    
+            <br>
+    
+            <label for="new_email">Email:</label>
+            <input style="margin-top: 5px; margin-bottom: 15px;" type="text" id="new_email" name="new_email" required>
+    
+            <br>
+    
+            <label for="new_password">Create Password:</label>
+            <input style="margin-top: 5px; margin-bottom: 15px;" type="password" id="new_password" name="new_password" required>
+    
+            <br>
+
+            <input style="margin-top: 15px;" type="submit" value="Create Account">
+            <p id="updateDisplay" style="display:none;"></p>
+        <form >
+
         </div>
+    <div class="textBox">
+        <h1>Chrono</h1>
     </div>
+</div>
 
 </body>
 </html>

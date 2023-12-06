@@ -14,28 +14,41 @@
     <title>Login page</title>
 
 <body>
-    <div class="backBox">
-        <div class="loginBox">
-            <h2>Login</h2>
-            <!-- Still Needs form actions -->
-            <p style="display: inline;">Don't have an account? <a href="{{ url_for('register') }}">Sign Up<br><br><br></a></p>
-                <label for="username">Email Address:</label>
-                <input style="margin-top: 10px; margin-bottom: 25px;" type="text" id="email" name="email" required>
-        
-                <br>
-        
-                <label for="password">Password:</label>
-                <input style="margin-top: 10px; margin-bottom: 25px;" type="password" id="password" name="password" required>
-        
-                <br>
-        
-                <input style="margin-top: 25px;" type="submit" value="Login">
-            </form>   
+<div class="backBox">
+    <div class="loginBox">
+        <h2>Login</h2>
+
+    <!-- flash messages logic -->
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div style="color:red; text-align: center;" class="notification is-danger">
+            {{ messages[0] }} <br>
         </div>
-        <div class="textBox">
-            <h1>Chrono</h1>
-        </div>
+    {% endif %}
+    {% endwith %}
+
+        <!-- Still Needs form actions -->
+
+        <form action="{{ url_for('login_backend') }}" method="post">
+        <p style="display: inline;">Don't have an account? <a href="{{ url_for('register') }}">Sign Up<br><br><br></a></p>
+            <label for="username">Email Address:</label>
+            <input style="margin-top: 10px; margin-bottom: 25px;" type="text" id="email" name="email" required>
+    
+            <br>
+    
+            <label for="password">Password:</label>
+            <input style="margin-top: 10px; margin-bottom: 25px;" type="password" id="password" name="password" required>
+    
+            <br>
+    
+            <input style="margin-top: 25px;" type="submit" value="Login">
+        </form>   
     </div>
+    <div class="textBox">
+        <h1>Chrono</h1>
+    </div>
+</div>
 
 </body>
 </html>
