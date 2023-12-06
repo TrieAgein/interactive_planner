@@ -197,9 +197,9 @@ def login_backend():
 def dashboard():
     return render_template('dashboard.html')
 
-@app.route('/dashboard/calender')
-def calender():
-    return render_template('calender.html')
+@app.route('/dashboard/calendar')
+def calendar():
+    return render_template('calendar.html')
 
 @app.route('/dashboard/eventform')
 def eventform():
