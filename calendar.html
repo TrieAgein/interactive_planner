@@ -11,10 +11,10 @@
             padding: 0;
         }
 
-        nav {
+        nav { 
             background-color: #333;
             color: white;
-            padding: 10px; 
+            padding: 10px;
             text-align: center;
         }
 
@@ -34,12 +34,13 @@
 <body>
 
     <nav>
-        <a href="{{ url_for('dashboard') }}">Back to dashboard</a>
-        <a href="{{ url_for('calendar') }}">calender</a>
+        <a href="{{ url_for('dashboard') }}">Home</a>
+        <a href="{{ url_for('eventform') }}">Event Form</a>
+        <a href="{{ url_for('messages') }}">Messages</a>
     </nav>
 
     <!-- Your content goes here -->
-    <p>Messages page<p>
+    <p>Calender page<p>
 
 </body>
 </html>
