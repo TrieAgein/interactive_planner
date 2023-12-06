@@ -54,7 +54,7 @@ class Message(db.Model):
     recipient = db.relationship('User', back_populates='sent', foreign_keys=[recipient_id])
 
 class UserView(ModelView):
-    form_columns = ["email", "password", "inbox", "sent"]
+    form_columns = ["email", "password"]
     column_list = ["email", "password", "inbox", "sent"]
 
     #form_args = {
