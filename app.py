@@ -159,9 +159,9 @@ def login_backend():
 
         if check_password_hash(user.password, Password):
 
-            # session['email'] = Email
+            # session['id'] = user.id
 
-            return redirect(url_for('dashboard', id=user.id))
+            return redirect(url_for('dashboard'))
 
         else:
             flash('Password is incorrect: try again')
@@ -193,8 +193,8 @@ def login_backend():
 #     return render_template('student.html')
 
 
-@app.route('/dashboard/<id>')
-def dashboard(id):
+@app.route('/dashboard')
+def dashboard():
     return render_template('dashboard.html')
 
 @app.route('/dashboard/calender')
