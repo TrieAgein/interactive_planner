@@ -3,43 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Website</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        nav {
-            background-color: #333;
-            color: white;
-            padding: 10px; 
-            text-align: center;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            padding: 14px 16px;
-            display: inline-block;
-        }
-
-        nav a:hover {
-            background-color: #ddd;
-            color: black;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/app.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@300&family=Cinzel&family=IM+Fell+French+Canon+SC&family=Julius+Sans+One&family=Marcellus&family=Marcellus+SC&family=Philosopher&family=Poiret+One&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/182976f003.js" crossorigin="anonymous">
+        
+    </script>
 </head>
-<body>
+<body style="background: rgba(14,14,14,255);" class="body2">
 
     <nav>
-        <a href="{{ url_for('dashboard') }}">Back to dashboard</a>
-        <a href="{{ url_for('calendar') }}">calender</a>
+        <a href="{{ url_for('dashboard', id=user_id) }}">Back to Dashboard</a>
+        <a href="{{ url_for('calendar', id=user_id) }}">Calendar</a>
+        <a class="split">Chrono</a>
     </nav>
+<div class="content-wrapper">
+    <div class="view-open-chats">
+        <div class="tab">
+            <!-- NEED TO MAKE IT SO CURRENTLY LOGGED USER DOESN'T HAVE A BUTTON -->
+            {% set unique_emails = [] %}
+            {% set all_messages = received_messages + sent_messages %}
+            {% for message in all_messages %}
+                {% if message.sender.email not in unique_emails %}
+                    {% set _ = unique_emails.append(message.sender.email) %}
+                    <button class="tablinks" onclick="openConvo(event, '{{ message.sender.email }}')">{{ message.sender.email }}</button>
+                {% endif %}
+                {% if message.recipient.email not in unique_emails %}
+                    {% set _ = unique_emails.append(message.recipient.email) %}
+                    <button class="tablinks" onclick="openConvo(event, '{{ message.recipient.email }}')">{{ message.recipient.email }}</button>
+                {% endif %}
+            {% endfor %}    
+        </div>   
+    </div>
+<div class="messages-wrapper">
+    <div class="view-messages">
+        <div class="convo-user">
+            <!-- DISPLAY THE CURRENT CONVO EMAIL HERE -->
+        </div>
+        {% set all_messages = received_messages + sent_messages %}
+        {% for message in all_messages|sort(attribute='timestamp') %}
+            {% if (message in received_messages and message.sender.email) %}
+                <div class="receivedMsg">
+                    <!-- <span>{{ message.timestamp }}</span>
+                    <span>- From: {{ message.sender.email }}</span> -->
+                    {{ message.body }}<br>
+                    <span>{{ message.timestamp }}</span>
+                </div>
+            {% elif (message in sent_messages and message.recipient.email) %}
+                <div class="sentMsg"> 
+                    <!-- <span>{{ message.timestamp }}</span>
+                    <span>- To: {{ message.recipient.email }}</span> -->
+                    {{ message.body }}
+                    <br>
+                    <span>{{ message.timestamp }}</span>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <!-- SHOULD REPLY ON ENTER -->
+        <textarea class="reply" name="reply" placeholder="Enter to reply..." required></textarea>
+    </div>
 
-    <!-- Your content goes here -->
-    <p>Messages page<p>
+    <div class="send-messages">
+    <form action="{{ url_for('send_message', id=user_id) }}" method="post">
+        <div class="column">
+          <label for="body">✎ Compose Message:</label>
+          <br>
+          <textarea id="body" name="body" required></textarea>
+        </div>
+        <div class="column">
+          <label for="email">To:</label>
+          <br>
+          <input class="dark" type="text" id="email" name="email" placeholder="Enter an email" required>
+          <br>
+          <button type="submit">Send Message</button>
+        </div>
+    </form>
+    </div>
 
+    
+</div>
+</div>
 </body>
 </html>
