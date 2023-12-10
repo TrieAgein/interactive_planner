@@ -9,12 +9,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 from datetime import datetime
+import pytz
 
 
 #flask --app app run   use this to run app
 # http://127.0.0.1:5000/ # link to webaddress
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///example.sqlite"
 app.config["SECRET_KEY"] = "mysecret"
@@ -159,9 +160,9 @@ def login_backend():
 
         if check_password_hash(user.password, Password):
 
-            # session['id'] = user.id
+            session['id'] = user.id
 
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('dashboard', id = user.id))
 
         else:
             flash('Password is incorrect: try again')
@@ -172,42 +173,134 @@ def login_backend():
         return redirect(url_for("login"))
         #return jsonify({"error": "Invalid request: Email not found or invalid login credentials"}), 404
 
-# @app.route('/user_view/<email>')
-# def student_view(email):
-#     check = session.get('email', None)
 
-#     # Filter student by name
-#     user = User.query.filter_by(email=email).first()
+@app.route('/dashboard/<id>')
+def dashboard(id):
+    return render_template('dashboard.html', user_id=id)
 
-#     if user.email != check:
-#         flash('You do not have access to this page.')
-#         return abort(403) # Abort the request with a 403 Forbidden error
-    
-#     # Find what classes they are enrolled into
-#     #enrollments = Enrollment.query.filter_by(student=student).all()
-    
-#     # Extract courses from the student's enrollment
-#     #courses = [enrollment.course for enrollment in enrollments]
+@app.route('/dashboard/calendar/<id>')
+def calendar(id):
+    return render_template('calendar.html', user_id=id)
 
-#     # Render it into student html 
-#     return render_template('student.html')
+@app.route('/dashboard/eventform/<id>')
+def eventform(id):
+    return render_template('event_form.html', user_id=id)
+
+@app.route('/eventform_backend/<id>', methods=['POST'])
+def eventform_backend(id):
+
+    user = User.query.filter_by(id=id).first()
+
+    if request.method == 'POST':
+        event_name = request.form['event_name']
+        event_date = request.form['event_date']
+        event_time = request.form['event_time']
 
 
-@app.route('/dashboard')
-def dashboard():
-    return render_template('dashboard.html')
+        # Create and add the event to the database
+        new_event = Event(date=event_date, time=event_time, event=event_name, user=user)
+        db.session.add(new_event)
+        db.session.commit()
 
-@app.route('/dashboard/calendar')
-def calendar():
-    return render_template('calendar.html')
+        flash('Event created successfully!')
+        return redirect(url_for('dashboard', id=id))
 
-@app.route('/dashboard/eventform')
-def eventform():
-    return render_template('event_form.html')
+    return render_template('event_form.html', user_id=id)
 
-@app.route('/dashboard/messages')
-def messages():
-    return render_template('messages.html')
+
+@app.route('/get_events/<user_id>')
+def get_events(user_id):
+    events = Event.query.filter_by(user_id=user_id).all()
+    event_list = []
+
+    for event in events:
+
+        start_datetime_str = f'{event.date}T{event.time}'
+
+        event_list.append({
+            'title': event.event,
+            'start': start_datetime_str ,
+            'end': '',
+            'url': '',   #work on this! this is how its inputed into the calender. you can add more stuff
+            'color': 'blue',  # Set a specific color for the event
+            'description': 'Some additional information about the event',
+            # 'editable': True,  # Make the event non-editable
+            # 'extendedProps': {
+            #     'hours': '08',  # Include additional custom properties
+            #     'minutes': '30',
+            # }
+        })
+
+    return jsonify(event_list)
+
+
+@app.route('/dashboard/messages/<id>')
+def messages(id):
+    user = User.query.get(id)
+    sent_messages = Message.query.filter_by(sender_id=id).all()
+    received_messages = Message.query.filter_by(recipient_id=id).all()
+    if user:
+        return render_template('messages.html', user_id=user.id , user_email=user.email, received_messages=received_messages, sent_messages=sent_messages, users=User.query.all())
+    return "User not found."
+
+@app.route('/dashboard/messages/<id>/<convo_id>', methods=['GET', 'POST'])
+def open_convo(id, convo_id):
+    user = User.query.get(id)
+    sent_messages = Message.query.filter_by(sender_id=id).all()
+    received_messages = Message.query.filter_by(recipient_id=id).all()
+    return render_template('open_convo.html', user_id=user.id, user_email=user.email, convo_id=convo_id, received_messages=received_messages, sent_messages=sent_messages, users=User.query.all())
+
+@app.route('/dashboard/messages/<id>/<convo_id>/reply', methods=['GET', 'POST'])
+def reply(id, convo_id):
+    user = User.query.get(id)
+    body = request.form.get('reply')
+    new_msg = Message(body=body, sender_id=id, recipient_id=convo_id)
+    db.session.add(new_msg)
+    db.session.commit()
+
+    return redirect(url_for("open_convo", id=user.id, convo_id=convo_id))
+
+# Routes for sending and viewing messages
+@app.route('/dashboard/messages/<id>/send_message', methods=['GET', 'POST'])
+def send_message(id):
+    user = User.query.get(id)
+    email = request.form.get('email')
+    body = request.form.get('body')
+
+    existing_user = User.query.filter_by(email=email).first()
+
+    if existing_user is None:
+        flash('Email address does not exist in our database')
+        return redirect(url_for("messages", id=user.id))
+    if existing_user.email == user.email:
+        flash('Can not send message to self')
+        return redirect(url_for("messages", id=user.id))
+
+    new_msg = Message(body=body, sender_id=id, recipient_id=existing_user.id)
+
+    db.session.add(new_msg)
+    db.session.commit()
+
+    return redirect(url_for("open_convo", id=user.id, convo_id=existing_user))
+
+@app.route('/timezone/<time>')
+def timezone(time):
+
+    # Get user's timezone from request or user preferences
+    user_timezone = request.args.get('timezone', 'UTC')
+
+    # Get current time in UTC
+    utc_now = datetime.utcnow()
+
+    # Convert UTC time to user's timezone
+    user_timezone_obj = pytz.timezone(user_timezone)
+    local_time = utc_now.replace(tzinfo=pytz.utc).astimezone(user_timezone_obj)
+
+    # Print user's timezone to console
+    print(f"User's timezone: {user_timezone}")
+
+    return f"Local time in {user_timezone}: ------- {local_time}"
+
 
 
 if __name__ == '__main__':
