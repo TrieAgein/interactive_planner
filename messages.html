@@ -7,9 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@300&family=Cinzel&family=IM+Fell+French+Canon+SC&family=Julius+Sans+One&family=Marcellus&family=Marcellus+SC&family=Philosopher&family=Poiret+One&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/182976f003.js" crossorigin="anonymous">
-        
-    </script>
+    <script src="https://kit.fontawesome.com/182976f003.js" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='messages.js') }}"></script>
 </head>
 <body style="background: rgba(14,14,14,255);" class="body2">
 
@@ -21,47 +20,29 @@
 <div class="content-wrapper">
     <div class="view-open-chats">
         <div class="tab">
-            <!-- NEED TO MAKE IT SO CURRENTLY LOGGED USER DOESN'T HAVE A BUTTON -->
             {% set unique_emails = [] %}
             {% set all_messages = received_messages + sent_messages %}
             {% for message in all_messages %}
-                {% if message.sender.email not in unique_emails %}
+                {% if message.sender.email not in unique_emails and message.sender.id != user_id %}
                     {% set _ = unique_emails.append(message.sender.email) %}
-                    <button class="tablinks" onclick="openConvo(event, '{{ message.sender.email }}')">{{ message.sender.email }}</button>
+                    <form action="{{ url_for('open_convo', id=user_id, convo_id=message.sender.email) }}" method="post">
+                        <button class="tablinks">{{ message.sender.email }}</button>
+                    </form>
                 {% endif %}
-                {% if message.recipient.email not in unique_emails %}
+                {% if message.recipient.email not in unique_emails and message.recipient.id != user_id %}
                     {% set _ = unique_emails.append(message.recipient.email) %}
-                    <button class="tablinks" onclick="openConvo(event, '{{ message.recipient.email }}')">{{ message.recipient.email }}</button>
+                    <form action="{{ url_for('open_convo', id=user_id, convo_id=message.recipient.email) }}" method="post">
+                        <button class="tablinks">{{ message.recipient.email }}</button>
+                    </form>
                 {% endif %}
             {% endfor %}    
         </div>   
     </div>
 <div class="messages-wrapper">
     <div class="view-messages">
-        <div class="convo-user">
-            <!-- DISPLAY THE CURRENT CONVO EMAIL HERE -->
-        </div>
-        {% set all_messages = received_messages + sent_messages %}
-        {% for message in all_messages|sort(attribute='timestamp') %}
-            {% if (message in received_messages and message.sender.email) %}
-                <div class="receivedMsg">
-                    <!-- <span>{{ message.timestamp }}</span>
-                    <span>- From: {{ message.sender.email }}</span> -->
-                    {{ message.body }}<br>
-                    <span>{{ message.timestamp }}</span>
-                </div>
-            {% elif (message in sent_messages and message.recipient.email) %}
-                <div class="sentMsg"> 
-                    <!-- <span>{{ message.timestamp }}</span>
-                    <span>- To: {{ message.recipient.email }}</span> -->
-                    {{ message.body }}
-                    <br>
-                    <span>{{ message.timestamp }}</span>
-                </div>
-            {% endif %}
-        {% endfor %}
-        <!-- SHOULD REPLY ON ENTER -->
-        <textarea class="reply" name="reply" placeholder="Enter to reply..." required></textarea>
+    <div class="convo-user">
+        <p>Open a conversation</p>
+    </div>
     </div>
 
     <div class="send-messages">
