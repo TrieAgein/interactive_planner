@@ -20,7 +20,7 @@
 
 
 </head>
-<body style="background: rgba(14,14,14,255); color: white; overflow: auto;">
+<body style="background: rgba(14,14,14,255); color: white; overflow: auto">
 
     <nav>
         <a class="active" href="{{ url_for('dashboard', id=user_id) }}">Home</a>
@@ -41,12 +41,13 @@
 
       <div class="right-content_dash"> -->
         <!-- Content on the right -->
+        <div class="container">
         <script src="{{ url_for('static', filename='todo.js') }}"></script>
             <select id='timezone-selector'></select>
 
             <br></br>
             <div id='calendar'></div>
-
+        </div>
 <!--       </div>
     </div> -->
 
@@ -56,3 +57,4 @@
 
 
 </html>
+
